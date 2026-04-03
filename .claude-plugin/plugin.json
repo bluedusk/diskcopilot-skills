@@ -1,5 +1,5 @@
 {
-  "name": "diskcopilot-skills",
+  "name": "diskcopilot",
   "description": "Claude Code skills for disk scanning, analysis, and cleanup using diskcopilot-cli",
   "version": "0.1.0",
   "author": {
