@@ -34,10 +34,14 @@ This downloads a single pre-built binary (~5 MB). No Rust or build tools needed.
 
 ## Quick start
 
-1. **Always check the cache first**: `diskcopilot-cli query info <path>` — never skip this step, never assume the cache is stale. A scan takes 10-15 seconds and should not be run unnecessarily.
-2. If a scan exists, use it. Only re-scan if the user explicitly asks for it or the data is clearly wrong.
-3. If no scan exists (`"Not scanned"`), then scan: `diskcopilot-cli scan <path>`
-4. Query with SQL: `diskcopilot-cli query sql "<SELECT ...>" <path>`
+1. **Always check the cache first**: `diskcopilot-cli query info ~` — never skip this step. Look at the `scanned_at` timestamp.
+2. **If scan exists and is < 1 hour old**: use it silently.
+3. **If scan exists and is 1-24 hours old**: use it, mention when it was scanned ("using scan from 3 hours ago").
+4. **If scan exists and is > 24 hours old**: rescan automatically — don't ask, just do it. 12 seconds is faster than a round-trip question.
+5. **If no scan exists**: scan: `diskcopilot-cli scan ~ --full`
+6. Query with SQL: `diskcopilot-cli query sql "<SELECT ...>" ~`
+
+**Always scan the home directory (`~`), not a subdirectory.** A single scan of `~` covers all subdirectory queries. Don't scan `~/playground` when the user asks about node_modules — scan `~` once and query the subtree you need. Scanning narrow paths wastes time because the user will inevitably ask about another folder next.
 
 ## Two response modes
 
@@ -51,13 +55,14 @@ User selects and trashes items in the browser. No AI round-trips for the interac
 
 ## Scanning
 
+Always use `--full` to ensure accurate file counts and complete query results.
+
 ```bash
-diskcopilot-cli scan <path>           # files >= 1MB (fast, covers cleanup use cases)
-diskcopilot-cli scan <path> --full    # all files (slower, needed for counts/small files)
+diskcopilot-cli scan ~ --full         # home directory — the default choice
 diskcopilot-cli scan / --force --full # full disk (needs Full Disk Access in System Settings)
 ```
 
-A home directory scan covers all subdirectory queries — no need to scan each folder separately. Always check `query info` first — if a scan exists, ask the user whether they want to rescan before proceeding.
+A home directory scan covers all subdirectory queries — never scan a subdirectory when `~` will do.
 
 ## Querying with SQL
 
