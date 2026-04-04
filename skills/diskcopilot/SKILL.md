@@ -13,6 +13,7 @@ The tool only reads filesystem metadata (names, sizes, timestamps) — it never 
 ## Presentation rules
 
 - **Never show raw SQL, JSON, or command output to the user.** Run queries behind the scenes, then present clean formatted results (tables, lists, summaries).
+- **Number every row** in file/directory tables so the user can say "delete 1, 3, 5" instead of typing paths. Keep an internal mapping of index → full path so you can act on their selection immediately.
 - Convert bytes to human-readable sizes (GB, MB). Convert Unix timestamps to dates.
 - When the user says "my files", they mean personal files — Documents, Downloads, Desktop, Pictures, Movies, Music. Exclude system files, build artifacts, caches, logs, and hidden directories.
 - Filter out noise: package-lock.json, .DS_Store, build outputs, etc. Only show files a human would recognize as theirs.
