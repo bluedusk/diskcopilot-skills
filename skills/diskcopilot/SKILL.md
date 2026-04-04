@@ -16,7 +16,8 @@ The tool only reads filesystem metadata (names, sizes, timestamps) — it never 
 - Convert bytes to human-readable sizes (GB, MB). Convert Unix timestamps to dates.
 - When the user says "my files", they mean personal files — Documents, Downloads, Desktop, Pictures, Movies, Music. Exclude system files, build artifacts, caches, logs, and hidden directories.
 - Filter out noise: package-lock.json, .DS_Store, build outputs, etc. Only show files a human would recognize as theirs.
-- When showing files, offer to open them: `open <path>` opens in default app, `open -R <path>` reveals in Finder. The user can say "open it" or "show me in Finder".
+- When showing file paths, format them as clickable links using `file://` URLs: `[filename](file:///full/path/to/file)`. Most terminals render these as clickable links that open the file or folder directly.
+- If the user asks to open a file or folder, use `open <path>` (opens in default app) or `open -R <path>` (reveals in Finder).
 
 ## First: ensure diskcopilot-cli is installed
 
