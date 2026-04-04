@@ -45,14 +45,14 @@ This downloads a single pre-built binary (~5 MB). No Rust or build tools needed.
 
 ## Quick start
 
-1. **Always check the cache first**: `diskcopilot-cli query info ~` — never skip this step. Look at the `scanned_at` timestamp.
+1. **Always check the cache first**: `diskcopilot-cli query info /` — never skip this step. Look at the `scanned_at` timestamp.
 2. **If scan exists and is < 1 hour old**: use it silently.
 3. **If scan exists and is 1-24 hours old**: use it, mention when it was scanned ("using scan from 3 hours ago").
-4. **If scan exists and is > 24 hours old**: rescan automatically — don't ask, just do it. 12 seconds is faster than a round-trip question.
-5. **If no scan exists**: scan: `diskcopilot-cli scan ~`
-6. Query with SQL: `diskcopilot-cli query sql "<SELECT ...>" ~`
+4. **If scan exists and is > 24 hours old**: rescan automatically — don't ask, just do it. 17 seconds is faster than a round-trip question.
+5. **If no scan exists**: scan: `diskcopilot-cli scan / --force`
+6. Query with SQL: `diskcopilot-cli query sql "<SELECT ...>" /`
 
-**Always scan the home directory (`~`), not a subdirectory.** A single scan of `~` covers all subdirectory queries. Don't scan `~/playground` when the user asks about node_modules — scan `~` once and query the subtree you need. Scanning narrow paths wastes time because the user will inevitably ask about another folder next.
+**Always scan the whole drive (`/`), not a subdirectory or home directory.** A full drive scan covers everything — system files, apps, caches, all users. Use `--force` to skip the system path warning. This takes ~17 seconds and avoids ever needing to rescan a different path.
 
 ## Generating an insight report
 
@@ -64,17 +64,17 @@ Run these queries (in parallel if possible):
 
 ```bash
 diskcopilot-cli scan ~   # only if cache is missing or stale
-diskcopilot-cli query sql "SELECT total_disk_size FROM dirs WHERE parent_id IS NULL" ~
-diskcopilot-cli query sql "SELECT name, total_disk_size FROM dirs WHERE parent_id = (SELECT id FROM dirs WHERE parent_id IS NULL) ORDER BY total_disk_size DESC LIMIT 15" ~
+diskcopilot-cli query sql "SELECT total_disk_size FROM dirs WHERE parent_id IS NULL" /
+diskcopilot-cli query sql "SELECT name, total_disk_size FROM dirs WHERE parent_id = (SELECT id FROM dirs WHERE parent_id IS NULL) ORDER BY total_disk_size DESC LIMIT 15" /
 diskcopilot-cli query summary ~ --json
 diskcopilot-cli query dev-artifacts ~ --json
-diskcopilot-cli query sql "SELECT name, disk_size, extension, modified_at FROM files ORDER BY disk_size DESC LIMIT 15" ~
-diskcopilot-cli query sql "SELECT extension, COUNT(*) as count, SUM(disk_size) as total FROM files WHERE extension IS NOT NULL GROUP BY extension ORDER BY total DESC LIMIT 10" ~
+diskcopilot-cli query sql "SELECT name, disk_size, extension, modified_at FROM files ORDER BY disk_size DESC LIMIT 15" /
+diskcopilot-cli query sql "SELECT extension, COUNT(*) as count, SUM(disk_size) as total FROM files WHERE extension IS NOT NULL GROUP BY extension ORDER BY total DESC LIMIT 10" /
 ```
 
 Also query macOS system junk — see `references/macos-junk.md` for the full list of known junk categories, SQL queries, and cleanup commands:
 ```bash
-diskcopilot-cli query sql "SELECT name, total_disk_size FROM dirs WHERE name IN ('Caches', 'Google', 'Firefox', 'Mozilla', 'Safari', 'Homebrew', 'pip', 'Yarn', 'CocoaPods', 'Logs', '.Trash', 'DerivedData', 'Archives', 'Backup', 'MobileSync', 'ShipIt', 'ms-playwright', 'puppeteer', 'prisma') AND total_disk_size > 10000000 ORDER BY total_disk_size DESC" ~
+diskcopilot-cli query sql "SELECT name, total_disk_size FROM dirs WHERE name IN ('Caches', 'Google', 'Firefox', 'Mozilla', 'Safari', 'Homebrew', 'pip', 'Yarn', 'CocoaPods', 'Logs', '.Trash', 'DerivedData', 'Archives', 'Backup', 'MobileSync', 'ShipIt', 'ms-playwright', 'puppeteer', 'prisma') AND total_disk_size > 10000000 ORDER BY total_disk_size DESC" /
 ```
 
 Also get disk free space:
@@ -177,14 +177,11 @@ After presenting the report, ask what the user wants to clean up. Delete items d
 ## Scanning
 
 ```bash
-diskcopilot-cli scan ~                # default — files >= 1MB, fast, accurate dir sizes
-diskcopilot-cli scan ~ --full         # all files — needed for file counts, extension queries, name search
-diskcopilot-cli scan / --force --full # full disk (needs Full Disk Access in System Settings)
+diskcopilot-cli scan / --force        # default — whole drive, files >= 1MB, ~17s
+diskcopilot-cli scan / --force --full # all files — needed for file counts, extension queries, name search
 ```
 
-The default mode gives accurate directory sizes and captures all large files. Use `--full` only when the user's question requires individual small file records (e.g. "how many .rs files", "search for a config file", "find duplicates").
-
-A home directory scan covers all subdirectory queries — never scan a subdirectory when `~` will do.
+Always scan `/` (whole drive) with `--force`. One scan covers everything. Use `--full` only when the user explicitly asks for it.
 
 ## Querying with SQL
 
@@ -238,36 +235,36 @@ The `dirs` table is a tree via `parent_id`. Each dir's `total_disk_size` is the 
 diskcopilot-cli query sql "SELECT d.total_disk_size, p.name as project
   FROM dirs d JOIN dirs p ON d.parent_id = p.id
   WHERE d.name = 'node_modules'
-  ORDER BY d.total_disk_size DESC" ~
+  ORDER BY d.total_disk_size DESC" /
 
 # Top 10 largest files
 diskcopilot-cli query sql "SELECT name, disk_size, extension
-  FROM files ORDER BY disk_size DESC LIMIT 10" ~
+  FROM files ORDER BY disk_size DESC LIMIT 10" /
 
 # Total size by file extension
 diskcopilot-cli query sql "SELECT extension, COUNT(*) as count, SUM(disk_size) as total
   FROM files WHERE extension IS NOT NULL
-  GROUP BY extension ORDER BY total DESC LIMIT 20" ~
+  GROUP BY extension ORDER BY total DESC LIMIT 20" /
 
 # Files modified this week
 diskcopilot-cli query sql "SELECT name, disk_size
   FROM files WHERE modified_at > strftime('%s','now','-7 days')
-  ORDER BY disk_size DESC LIMIT 20" ~
+  ORDER BY disk_size DESC LIMIT 20" /
 
 # Files older than 1 year
 diskcopilot-cli query sql "SELECT name, disk_size, modified_at
   FROM files WHERE modified_at < strftime('%s','now','-365 days')
-  ORDER BY disk_size DESC LIMIT 20" ~
+  ORDER BY disk_size DESC LIMIT 20" /
 
 # Find all .dmg installers
 diskcopilot-cli query sql "SELECT name, disk_size FROM files
-  WHERE extension = 'dmg' ORDER BY disk_size DESC" ~
+  WHERE extension = 'dmg' ORDER BY disk_size DESC" /
 
 # Directories named 'target' (Rust build caches)
 diskcopilot-cli query sql "SELECT d.total_disk_size, p.name as project
   FROM dirs d JOIN dirs p ON d.parent_id = p.id
   WHERE d.name = 'target'
-  ORDER BY d.total_disk_size DESC" ~
+  ORDER BY d.total_disk_size DESC" /
 
 # Reconstruct full path for a directory (walk parent chain)
 diskcopilot-cli query sql "WITH RECURSIVE path(id, name, parent_id, full) AS (
@@ -275,7 +272,7 @@ diskcopilot-cli query sql "WITH RECURSIVE path(id, name, parent_id, full) AS (
     UNION ALL
     SELECT p.id, p.name, p.parent_id, p.name || '/' || path.full
     FROM dirs p JOIN path ON p.id = path.parent_id
-  ) SELECT full FROM path WHERE parent_id IS NULL" ~
+  ) SELECT full FROM path WHERE parent_id IS NULL" /
 ```
 
 You can write SQL for any question. If you need to reconstruct full paths for files, join `files.dir_id` to `dirs.id` and walk the `parent_id` chain with a recursive CTE, or use the predefined commands which do this automatically.
@@ -323,19 +320,19 @@ Protected files still appear in reports (the user needs to see their full disk u
 ## Example flows
 
 **"How big are my node_modules?"**
-1. `query info ~` — check cache
+1. `query info /` — check cache
 2. If scan exists, ask user if they want to rescan. If no scan, scan now.
 3. `query sql "SELECT d.total_disk_size, p.name as project FROM dirs d JOIN dirs p ON d.parent_id = p.id WHERE d.name = 'node_modules' ORDER BY d.total_disk_size DESC" ~`
 4. Present as a table. Done.
 
 **"What's taking up my disk space?"**
-1. `query info ~` — check cache
+1. `query info /` — check cache
 2. If scan exists, ask user if they want to rescan. If no scan, scan now.
 3. `query sql "SELECT name, total_disk_size FROM dirs WHERE parent_id = (SELECT id FROM dirs WHERE parent_id IS NULL) ORDER BY total_disk_size DESC LIMIT 15" ~`
 4. Present top-level breakdown. Follow up with specific areas if asked.
 
 **"Help me free up 10GB"**
-1. `query info ~` — check cache, scan if needed
+1. `query info /` — check cache, scan if needed
 2. Run the full Disk Health Report flow
 3. Present categorized cleanup opportunities with sizes
 4. Ask what to delete, execute with `diskcopilot-cli delete <path> --trash`
