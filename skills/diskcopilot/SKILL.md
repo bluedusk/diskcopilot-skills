@@ -34,9 +34,10 @@ This downloads a single pre-built binary (~5 MB). No Rust or build tools needed.
 
 ## Quick start
 
-1. Check if scanned: `diskcopilot-cli query info <path>`
-2. Scan if needed: `diskcopilot-cli scan <path> --full`
-3. Query with SQL: `diskcopilot-cli query sql "<SELECT ...>" <path>`
+1. **Always check the cache first**: `diskcopilot-cli query info <path>` — never skip this step, never assume the cache is stale. A scan takes 10-15 seconds and should not be run unnecessarily.
+2. If a scan exists, use it. Only re-scan if the user explicitly asks for it or the data is clearly wrong.
+3. If no scan exists (`"Not scanned"`), then scan: `diskcopilot-cli scan <path>`
+4. Query with SQL: `diskcopilot-cli query sql "<SELECT ...>" <path>`
 
 ## Two response modes
 
@@ -56,7 +57,7 @@ diskcopilot-cli scan <path> --full    # all files (slower, needed for counts/sma
 diskcopilot-cli scan / --force --full # full disk (needs Full Disk Access in System Settings)
 ```
 
-A home directory scan covers all subdirectory queries — no need to scan each folder separately. Check `query info` first to avoid unnecessary re-scans.
+A home directory scan covers all subdirectory queries — no need to scan each folder separately. Always check `query info` first — if a scan exists, ask the user whether they want to rescan before proceeding.
 
 ## Querying with SQL
 
@@ -212,20 +213,34 @@ Tell the user: "I've opened a cleanup dashboard in your browser. You can browse 
 
 **"How big are my node_modules?"**
 1. `query info ~` — check cache
-2. `query sql "SELECT d.total_disk_size, p.name as project FROM dirs d JOIN dirs p ON d.parent_id = p.id WHERE d.name = 'node_modules' ORDER BY d.total_disk_size DESC" ~`
-3. Present as a table. Done.
+2. If scan exists, ask user if they want to rescan. If no scan, scan now.
+3. `query sql "SELECT d.total_disk_size, p.name as project FROM dirs d JOIN dirs p ON d.parent_id = p.id WHERE d.name = 'node_modules' ORDER BY d.total_disk_size DESC" ~`
+4. Present as a table. Done.
 
 **"What's taking up my disk space?"**
-1. `query info ~` → scan if needed
-2. `query sql "SELECT name, total_disk_size FROM dirs WHERE parent_id = (SELECT id FROM dirs WHERE parent_id IS NULL) ORDER BY total_disk_size DESC LIMIT 15" ~`
-3. Present top-level breakdown. Follow up with specific areas if asked.
+1. `query info ~` — check cache
+2. If scan exists, ask user if they want to rescan. If no scan, scan now.
+3. `query sql "SELECT name, total_disk_size FROM dirs WHERE parent_id = (SELECT id FROM dirs WHERE parent_id IS NULL) ORDER BY total_disk_size DESC LIMIT 15" ~`
+4. Present top-level breakdown. Follow up with specific areas if asked.
 
 **"Help me free up 10GB"**
-1. Scan if needed
+1. `query info ~` — check cache. Ask user about rescan if scan exists, or scan now if not.
 2. Run multiple SQL queries (large files, dev artifacts, old files)
 3. Write categorized analysis to insights file
 4. `serve ~ --insights-file /tmp/diskcopilot-insights.txt`
 5. User browses and trashes in browser
+
+## File insights
+
+When results include specific files or directories, don't just list names and sizes — explain what they are and whether they're safe to delete. Use the file extension, directory name, and path to infer purpose. Examples:
+
+- `~/Library/Caches/com.spotify.client` — Spotify's local cache. Safe to delete; the app rebuilds it.
+- `~/.rustup/toolchains/` — Rust compiler toolchains. Safe to remove unused ones, but the active toolchain is needed for `cargo build`.
+- `~/Documents/taxes-2024.pdf` — likely personal documents. Not safe to delete without asking.
+- `node_modules/` — npm dependencies. Safe to delete; `npm install` regenerates them.
+- `.DS_Store` — macOS Finder metadata. Safe to delete; recreated automatically.
+
+If you're unsure what a file is, say so rather than guessing. For ambiguous cases, recommend the user check before deleting.
 
 ## Important notes
 
