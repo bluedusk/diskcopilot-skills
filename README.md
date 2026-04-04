@@ -15,8 +15,8 @@ Or use slash commands:
 ## Install
 
 ```bash
-# 1. Install diskcopilot-cli
-git clone https://github.com/bluedusk/diskcopilot-cli && cd diskcopilot-cli && make install && cd ..
+# 1. Install diskcopilot-cli (Apple Silicon)
+curl -fsSL https://github.com/bluedusk/diskcopilot-cli/releases/latest/download/diskcopilot-cli-aarch64-apple-darwin.tar.gz | tar xz && sudo mv diskcopilot-cli /usr/local/bin/
 
 # 2. Install the Claude Code plugin
 claude plugin add bluedusk/diskcopilot-skills
