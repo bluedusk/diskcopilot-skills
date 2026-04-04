@@ -46,11 +46,9 @@ This downloads a single pre-built binary (~5 MB). No Rust or build tools needed.
 ## Quick start
 
 1. **Always check the cache first**: `diskcopilot-cli query info /` — never skip this step. Look at the `scanned_at` timestamp.
-2. **If scan exists and is < 1 hour old**: use it silently.
-3. **If scan exists and is 1-24 hours old**: use it, mention when it was scanned ("using scan from 3 hours ago").
-4. **If scan exists and is > 24 hours old**: rescan automatically — don't ask, just do it. 17 seconds is faster than a round-trip question.
-5. **If no scan exists**: scan: `diskcopilot-cli scan / --force`
-6. Query with SQL: `diskcopilot-cli query sql "<SELECT ...>" /`
+2. **If scan exists**: ask the user before rescanning. Tell them when the last scan was and ask if they want to use it or rescan. Example: "Last scan was 3 hours ago. Use existing data or rescan? (rescan takes ~17s)"
+3. **If no scan exists**: scan without asking: `diskcopilot-cli scan / --force`
+4. Query with SQL: `diskcopilot-cli query sql "<SELECT ...>" /`
 
 **Always scan the whole drive (`/`), not a subdirectory or home directory.** A full drive scan covers everything — system files, apps, caches, all users. Use `--force` to skip the system path warning. This takes ~17 seconds and avoids ever needing to rescan a different path.
 
