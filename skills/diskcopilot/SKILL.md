@@ -161,17 +161,9 @@ Health score grades:
 - D (5-10% free): Low space, cleanup needed soon
 - F (<5% free): Critical, immediate action needed
 
-### Step 3: Ask about HTML report
+### Step 3: Offer to act
 
-After presenting the report, ask:
-
-> "Want me to open an interactive cleanup dashboard in your browser? You can browse all the files and trash items directly."
-
-If yes, write the report insights to a file and launch the web UI:
-
-```bash
-diskcopilot-cli serve ~ --insights-file /tmp/diskcopilot-insights.txt
-```
+After presenting the report, ask what the user wants to clean up. Delete items directly via `diskcopilot-cli delete <path> --trash` when they confirm. No need to leave the conversation.
 
 ## Response modes
 
@@ -179,7 +171,7 @@ diskcopilot-cli serve ~ --insights-file /tmp/diskcopilot-insights.txt
 
 **Quick query** — for specific questions ("how big are my node_modules?", "find large mp4 files"). Check the cache, run a SQL query, present results. No full report needed.
 
-**Interactive cleanup** — for "help me clean up", "free up 10GB". Run the report flow, then launch the web UI.
+**Cleanup** — for "help me clean up", "free up 10GB", "delete junk". Run the report, then delete items the user confirms — all within the conversation.
 
 ## Scanning
 
@@ -315,34 +307,6 @@ diskcopilot-cli delete <path> --permanent   # irreversible
 
 Always prefer `--trash`. Always confirm with the user before deleting. System paths are blocked by a safety check.
 
-## Interactive web UI
-
-For cleanup sessions where the user wants to browse and select items to delete:
-
-```bash
-# Write your AI analysis to a file first
-cat > /tmp/diskcopilot-insights.txt << 'EOF'
-Your home directory uses 90 GB. Biggest cleanup opportunities:
-
-**Dev build caches (15.7 GB)** — Rust target/ dirs. Safe to delete, rebuilt by cargo build.
-**npm cache (7 GB)** — Safe to clear with npm cache clean --force.
-**Old files (4.7 GB)** — Files in ~/Documents untouched for over a year.
-EOF
-
-# Launch the web UI
-diskcopilot-cli serve <path> --insights-file /tmp/diskcopilot-insights.txt
-```
-
-The browser opens with:
-- AI insights panel at the top (your analysis — this is the most valuable part)
-- Directory overview with size bars
-- Categorized items with checkboxes
-- "Move to Trash" button with confirmation dialog
-
-Security: per-session auth token, CORS locked to localhost, system paths blocked.
-
-Tell the user: "I've opened a cleanup dashboard in your browser. You can browse the findings, select items, and trash them directly. Everything goes to macOS Trash so nothing is permanent."
-
 ## Example flows
 
 **"How big are my node_modules?"**
@@ -358,11 +322,10 @@ Tell the user: "I've opened a cleanup dashboard in your browser. You can browse 
 4. Present top-level breakdown. Follow up with specific areas if asked.
 
 **"Help me free up 10GB"**
-1. `query info ~` — check cache. Ask user about rescan if scan exists, or scan now if not.
-2. Run multiple SQL queries (large files, dev artifacts, old files)
-3. Write categorized analysis to insights file
-4. `serve ~ --insights-file /tmp/diskcopilot-insights.txt`
-5. User browses and trashes in browser
+1. `query info ~` — check cache, scan if needed
+2. Run the full Disk Health Report flow
+3. Present categorized cleanup opportunities with sizes
+4. Ask what to delete, execute with `diskcopilot-cli delete <path> --trash`
 
 ## File insights
 
