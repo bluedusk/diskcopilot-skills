@@ -1,0 +1,17 @@
+{
+  "name": "diskcopilot-skills",
+  "owner": {
+    "name": "bluedusk"
+  },
+  "metadata": {
+    "description": "AI agent plugin for disk scanning, analysis, and cleanup using diskcopilot-cli"
+  },
+  "plugins": [
+    {
+      "name": "diskcopilot",
+      "source": "./.",
+      "description": "Claude Code skills for disk scanning, analysis, and cleanup using diskcopilot-cli",
+      "version": "0.2.0"
+    }
+  ]
+}

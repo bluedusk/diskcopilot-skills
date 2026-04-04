@@ -11,15 +11,28 @@ Ask your agent things like:
 
 ## Install
 
+### Claude Code
+
 ```bash
-claude plugin add bluedusk/diskcopilot-skills
+claude plugin marketplace add bluedusk/diskcopilot-skills
+claude plugin install diskcopilot
 ```
 
-That's it. The plugin will automatically install the `diskcopilot-cli` binary on first use.
+The plugin will automatically install the `diskcopilot-cli` binary on first use.
 
-## Other agents
+### Other agents (Cursor, Copilot, Codex, Windsurf, etc.)
 
-For Cursor, Copilot, Codex, or other AI agents, copy the skill instructions from [skills/diskcopilot/SKILL.md](skills/diskcopilot/SKILL.md) into your agent's configuration file (`.cursorrules`, `copilot-instructions.md`, `AGENTS.md`, etc.). The skill includes auto-install instructions for the CLI binary.
+Copy the skill instructions from [skills/diskcopilot/SKILL.md](skills/diskcopilot/SKILL.md) into your agent's configuration file:
+
+| Agent | Config file |
+|-------|-------------|
+| Cursor | `.cursorrules` or `.cursor/rules/*.mdc` |
+| GitHub Copilot | `.github/copilot-instructions.md` |
+| OpenAI Codex | `AGENTS.md` |
+| Windsurf | `.windsurfrules` |
+| Google Gemini CLI | `GEMINI.md` |
+
+The skill includes auto-install instructions for the CLI binary — no manual setup needed.
 
 ## Commands
 
