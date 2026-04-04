@@ -308,6 +308,18 @@ diskcopilot-cli delete <path> --permanent   # irreversible
 
 Always prefer `--trash`. Always confirm with the user before deleting. System paths are blocked by a safety check.
 
+## Safelist (keep)
+
+Users can mark files as important so they never show up in cleanup recommendations:
+
+```bash
+diskcopilot-cli keep <path>       # protect a file or folder
+diskcopilot-cli unkeep <path>     # remove protection
+diskcopilot-cli keep-list         # show all protected items
+```
+
+Protected files still appear in reports (the user needs to see their full disk usage), but `diskcopilot-cli delete` will refuse to delete them. If the user says "keep this" or "don't delete this", run `diskcopilot-cli keep <path>` to persist it across sessions. The safelist is stored at `~/.diskcopilot/safelist.txt`.
+
 ## Example flows
 
 **"How big are my node_modules?"**
