@@ -21,12 +21,12 @@ The tool only reads filesystem metadata (names, sizes, timestamps) — it never 
 - If the user asks to open a file or folder, use `open <path>` (opens in default app) or `open -R <path>` (reveals in Finder).
 - **For "find my files" queries** (recently created, modified, specific names): use `find` on the live filesystem, not the SQLite cache. The default scan only stores files >= 1MB, so small personal files (photos, documents, configs) won't be in the database. Use diskcopilot for size analysis; use `find` for file discovery.
 
-## First: ensure diskcopilot-cli is installed
+## First: ensure diskcopilot-cli is installed and up to date
 
-Before doing anything else, check if the CLI is available:
+Before doing anything else, check if the CLI is available and what version:
 
 ```bash
-which diskcopilot-cli
+diskcopilot-cli --version
 ```
 
 If not found, install it to `~/.local/bin` (no sudo needed):
@@ -39,6 +39,18 @@ Then verify it's on PATH. If `~/.local/bin` is not on PATH, run it with the full
 
 ```bash
 export PATH="$HOME/.local/bin:$PATH"
+```
+
+**Check for updates** (do this once per session, not every query): compare the installed version against the latest release:
+
+```bash
+curl -sI https://github.com/diskcopilot/diskcopilot-cli/releases/latest | grep -i location | grep -oP 'v[\d.]+'
+```
+
+If the latest version is newer than what `--version` reports, tell the user and offer to upgrade:
+
+```bash
+curl -fsSL https://github.com/diskcopilot/diskcopilot-cli/releases/latest/download/diskcopilot-cli-$(uname -m)-apple-darwin.tar.gz | tar xz -C ~/.local/bin/
 ```
 
 This downloads a single pre-built binary (~5 MB). No Rust or build tools needed.
