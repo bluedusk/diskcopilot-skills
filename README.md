@@ -1,6 +1,6 @@
 # diskcopilot
 
-[![Version](https://img.shields.io/badge/version-0.3.0-blue)](https://github.com/diskcopilot/diskcopilot-skills/releases)
+[![Version](https://img.shields.io/badge/version-0.4.0-blue)](https://github.com/diskcopilot/diskcopilot-skills/releases)
 
 AI agent plugin for disk scanning, analysis, and cleanup. Requires macOS.
 
@@ -22,17 +22,13 @@ claude plugin install diskcopilot
 
 The plugin will automatically install the `diskcopilot-cli` binary on first use.
 
-### Other agents (Cursor, Copilot, Codex, Windsurf, etc.)
+### Other agents (Cursor, Copilot, Codex, Windsurf, Gemini CLI)
 
-Copy the skill instructions from [skills/diskcopilot/SKILL.md](skills/diskcopilot/SKILL.md) into your agent's configuration file:
+One-line install — works with any agent that supports the [Agent Skills](https://agentskills.io) standard:
 
-| Agent | Config file |
-|-------|-------------|
-| Cursor | `.cursorrules` or `.cursor/rules/*.mdc` |
-| GitHub Copilot | `.github/copilot-instructions.md` |
-| OpenAI Codex | `AGENTS.md` |
-| Windsurf | `.windsurfrules` |
-| Google Gemini CLI | `GEMINI.md` |
+```bash
+mkdir -p ~/.agents/skills/diskcopilot && curl -fsSL https://raw.githubusercontent.com/diskcopilot/diskcopilot-skills/main/skills/diskcopilot/SKILL.md -o ~/.agents/skills/diskcopilot/SKILL.md
+```
 
 The skill includes auto-install instructions for the CLI binary — no manual setup needed.
 

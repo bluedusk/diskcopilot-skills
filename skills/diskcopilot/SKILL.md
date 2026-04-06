@@ -1,5 +1,6 @@
 ---
 name: diskcopilot
+version: 0.4.0
 description: |
   How to use diskcopilot-cli to scan, analyze, and clean up disk space on macOS. Use this skill whenever the user mentions disk space, storage usage, large files, duplicate files, cleanup, what's taking up space, freeing up storage, old files, dev artifacts (node_modules, target, .build), or wants to understand their disk usage patterns. Also use when the user asks you to help organize, audit, or reduce the size of a directory. Even if the user doesn't mention "diskcopilot" by name — if they're talking about disk space or storage, this is the skill to use.
 ---

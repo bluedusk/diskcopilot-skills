@@ -44,6 +44,17 @@ Evals are defined in `evals/evals.json` (3 scenarios). Artifacts go to `disk-ana
 - **Scanning**: always scan `/` (whole drive) with `--force` to skip the system path warning. One scan covers everything -- no need to re-scan subdirectories.
 - **Cache check**: always run `diskcopilot-cli query info /` before scanning. If a cache exists, ask the user before rescanning.
 
+## Releasing
+
+Version must be updated in all three places, then tagged:
+
+1. `.claude-plugin/plugin.json` — `"version": "X.Y.Z"`
+2. `.claude-plugin/marketplace.json` — `"version": "X.Y.Z"`
+3. `skills/diskcopilot/SKILL.md` — `version: X.Y.Z` (frontmatter)
+4. `README.md` — version badge
+
+After committing, create a matching git tag: `git tag vX.Y.Z && git push --tags`
+
 ## Extending the Plugin
 
 - **New command**: add a `.md` file to `commands/` with YAML frontmatter (`description` field) and step-by-step instructions that reference the skill
