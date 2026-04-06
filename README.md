@@ -1,5 +1,7 @@
 # diskcopilot
 
+[![Version](https://img.shields.io/badge/version-0.3.0-blue)](https://github.com/bluedusk/diskcopilot-skills/releases)
+
 AI agent plugin for disk scanning, analysis, and cleanup. Requires macOS.
 
 Teaches AI agents how to use [diskcopilot-cli](https://github.com/bluedusk/diskcopilot-cli) — a fast disk scanner (~12s for a home directory) that caches filesystem metadata in SQLite, letting the agent write SQL to answer any disk space question.
