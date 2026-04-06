@@ -1,10 +1,10 @@
 # diskcopilot
 
-[![Version](https://img.shields.io/badge/version-0.3.0-blue)](https://github.com/bluedusk/diskcopilot-skills/releases)
+[![Version](https://img.shields.io/badge/version-0.3.0-blue)](https://github.com/diskcopilot/diskcopilot-skills/releases)
 
 AI agent plugin for disk scanning, analysis, and cleanup. Requires macOS.
 
-Teaches AI agents how to use [diskcopilot-cli](https://github.com/bluedusk/diskcopilot-cli) — a fast disk scanner (~12s for a home directory) that caches filesystem metadata in SQLite, letting the agent write SQL to answer any disk space question.
+Teaches AI agents how to use [diskcopilot-cli](https://github.com/diskcopilot/diskcopilot-cli) — a fast disk scanner (~12s for a home directory) that caches filesystem metadata in SQLite, letting the agent write SQL to answer any disk space question.
 
 Ask your agent things like:
 - "What's taking up space on my Mac?"
@@ -16,7 +16,7 @@ Ask your agent things like:
 ### Claude Code
 
 ```bash
-claude plugin marketplace add bluedusk/diskcopilot-skills
+claude plugin marketplace add diskcopilot/diskcopilot-skills
 claude plugin install diskcopilot
 ```
 
@@ -46,7 +46,7 @@ The skill includes auto-install instructions for the CLI binary — no manual se
 
 ## Privacy
 
-`diskcopilot-cli` only reads filesystem metadata (names, sizes, timestamps). It has no network dependencies and never sends data anywhere. The interactive cleanup UI runs on localhost with a per-session auth token. See [diskcopilot-cli](https://github.com/bluedusk/diskcopilot-cli#privacy--security) for details.
+`diskcopilot-cli` only reads filesystem metadata (names, sizes, timestamps). It has no network dependencies and never sends data anywhere. The interactive cleanup UI runs on localhost with a per-session auth token. See [diskcopilot-cli](https://github.com/diskcopilot/diskcopilot-cli#privacy--security) for details.
 
 ## License
 

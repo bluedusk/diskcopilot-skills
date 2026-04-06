@@ -5,8 +5,8 @@
   "author": {
     "name": "bluedusk"
   },
-  "homepage": "https://github.com/bluedusk/diskcopilot-skills",
-  "repository": "https://github.com/bluedusk/diskcopilot-skills",
+  "homepage": "https://github.com/diskcopilot/diskcopilot-skills",
+  "repository": "https://github.com/diskcopilot/diskcopilot-skills",
   "license": "MIT",
   "keywords": ["disk", "storage", "cleanup", "scanning", "diskcopilot"]
 }

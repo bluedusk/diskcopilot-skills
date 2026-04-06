@@ -32,7 +32,7 @@ which diskcopilot-cli
 If not found, install it to `~/.local/bin` (no sudo needed):
 
 ```bash
-mkdir -p ~/.local/bin && curl -fsSL https://github.com/bluedusk/diskcopilot-cli/releases/latest/download/diskcopilot-cli-$(uname -m)-apple-darwin.tar.gz | tar xz -C ~/.local/bin/
+mkdir -p ~/.local/bin && curl -fsSL https://github.com/diskcopilot/diskcopilot-cli/releases/latest/download/diskcopilot-cli-$(uname -m)-apple-darwin.tar.gz | tar xz -C ~/.local/bin/
 ```
 
 Then verify it's on PATH. If `~/.local/bin` is not on PATH, run it with the full path (`~/.local/bin/diskcopilot-cli`) or add it:
