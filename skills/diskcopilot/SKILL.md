@@ -1,6 +1,6 @@
 ---
 name: diskcopilot
-version: 0.4.0
+version: 0.5.0
 description: |
   How to use diskcopilot-cli to scan, analyze, and clean up disk space on macOS. Use this skill whenever the user mentions disk space, storage usage, large files, duplicate files, cleanup, what's taking up space, freeing up storage, old files, dev artifacts (node_modules, target, .build), or wants to understand their disk usage patterns. Also use when the user asks you to help organize, audit, or reduce the size of a directory. Even if the user doesn't mention "diskcopilot" by name — if they're talking about disk space or storage, this is the skill to use.
 ---
@@ -18,7 +18,8 @@ The tool only reads filesystem metadata (names, sizes, timestamps) — it never 
 - Convert bytes to human-readable sizes (GB, MB). Convert Unix timestamps to dates.
 - When the user says "my files", they mean personal files — Documents, Downloads, Desktop, Pictures, Movies, Music. Exclude system files, build artifacts, caches, logs, and hidden directories.
 - Filter out noise: package-lock.json, .DS_Store, build outputs, etc. Only show files a human would recognize as theirs.
-- When showing file paths, format them as clickable links using `file://` URLs: `[filename](file:///full/path/to/file)`. Most terminals render these as clickable links that open the file or folder directly.
+- **Always resolve full paths** for files in query results. Use a recursive CTE on the `dirs` table to build the full path — never show just a filename without its location.
+- Format file/folder paths as clickable `file://` links: `[filename](file:///full/path/to/file)`. Include a clickable folder link too so users can open the containing directory. Most terminals render these as clickable links.
 - If the user asks to open a file or folder, use `open <path>` (opens in default app) or `open -R <path>` (reveals in Finder).
 - **For "find my files" queries** (recently created, modified, specific names): use `find` on the live filesystem, not the SQLite cache. The default scan only stores files >= 1MB, so small personal files (photos, documents, configs) won't be in the database. Use diskcopilot for size analysis; use `find` for file discovery.
 

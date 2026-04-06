@@ -1,6 +1,6 @@
 # diskcopilot
 
-[![Version](https://img.shields.io/badge/version-0.4.0-blue)](https://github.com/diskcopilot/diskcopilot-skills/releases)
+[![Version](https://img.shields.io/badge/version-0.5.0-blue)](https://github.com/diskcopilot/diskcopilot-skills/releases)
 
 AI agent plugin for disk scanning, analysis, and cleanup. Requires macOS.
 
